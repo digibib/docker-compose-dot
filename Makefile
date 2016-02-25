@@ -38,9 +38,5 @@ tag:
 	vagrant ssh -c 'docker tag -f $(IMAGE) $(IMAGE):$(TAG)'
 
 push: tag
-	@echo "======= PUSHING KOHA CONTAINER ======\n"
+	@echo "======= PUSHING DOCKER_COMPOSE_DOT CONTAINER ======\n"
 	vagrant ssh -c 'docker push $(IMAGE):$(TAG)'
-
-docker_cleanup:
-	@echo "cleaning up unused containers and images"
-	@vagrant ssh -c '/vagrant/docker-cleanup.sh'
