@@ -1,0 +1,7 @@
+FROM golang:1.6
+
+VOLUME ["/app"]
+WORKDIR /go/src/app
+ADD . /go/src/app
+RUN go get -d && \
+    GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -v -x

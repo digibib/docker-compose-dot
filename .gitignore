@@ -1,0 +1,4 @@
+.vagrant
+build/*
+!build/PLACEHOLDER
+docker-compose-dot
