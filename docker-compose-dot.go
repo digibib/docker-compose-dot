@@ -52,13 +52,13 @@ func main() {
 		project string
 	)
 
-	if len(os.Args) > 1 {
-		bytes, err = ioutil.ReadFile(os.Args[1])
-		if err != nil {
-			log.Fatal(err)
-		}
-	} else {
+	if len(os.Args) < 2 {
 		log.Fatal("Need input file!")
+	}
+
+	bytes, err = ioutil.ReadFile(os.Args[1])
+	if err != nil {
+		log.Fatal(err)
 	}
 
 	// Load docker-compose.yml
@@ -88,7 +88,7 @@ func main() {
 		})
 
 	/** NETWORK NODES **/
-	for name, _ := range data.Networks {
+	for name := range data.Networks {
 		graph.AddNode(project, nodify(name), map[string]string{
 			"label":     fmt.Sprintf("\"Network: %s\"", name),
 			"style":     "filled",
