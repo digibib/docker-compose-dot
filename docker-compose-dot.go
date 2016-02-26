@@ -52,7 +52,6 @@ func main() {
 		project string
 	)
 
-	project = ""
 	if len(os.Args) > 1 {
 		bytes, err = ioutil.ReadFile(os.Args[1])
 		if err != nil {
