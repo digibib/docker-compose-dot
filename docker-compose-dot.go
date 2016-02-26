@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"log"
+
 	"github.com/awalterschulze/gographviz"
 	yaml "gopkg.in/yaml.v2"
 )
@@ -14,18 +15,18 @@ import (
 type config struct {
 	Version  string
 	Networks map[string]network
-	Volumes map[string]volume
+	Volumes  map[string]volume
 	Services map[string]service
 }
 
 type network struct {
 	Driver, External string
-	DriverOpts map[string]string "driver_opts"
+	DriverOpts       map[string]string "driver_opts"
 }
 
 type volume struct {
 	Driver, External string
-	DriverOpts map[string]string "driver_opts"
+	DriverOpts       map[string]string "driver_opts"
 }
 
 type service struct {
@@ -45,7 +46,7 @@ func nodify(s string) string {
 
 func main() {
 	var (
-		bytes []byte
+		bytes   []byte
 		err     error
 		graph   *gographviz.Graph
 		project string
@@ -77,31 +78,31 @@ func main() {
 
 	// Add legend
 	graph.AddSubGraph(project, "cluster_legend", map[string]string{"label": "Legend"})
-	graph.AddNode("cluster_legend", "legend_service", 
+	graph.AddNode("cluster_legend", "legend_service",
 		map[string]string{"shape": "plaintext",
-		"label": "<<TABLE BORDER='0'>" +
-		         "<TR><TD BGCOLOR='lightblue'><B>container1</B></TD></TR>" +
-		         "<TR><TD BGCOLOR='lightgrey'><FONT POINT-SIZE='9'>ports ext:int</FONT></TD></TR>" +
-		         "<TR><TD BGCOLOR='orange'><FONT POINT-SIZE='9'>volumes host:container</FONT></TD></TR>" +
-		         "<TR><TD BGCOLOR='pink'><FONT POINT-SIZE='9'>environment</FONT></TD></TR>" +
-		         "</TABLE>>",
-	})
+			"label": "<<TABLE BORDER='0'>" +
+				"<TR><TD BGCOLOR='lightblue'><B>container1</B></TD></TR>" +
+				"<TR><TD BGCOLOR='lightgrey'><FONT POINT-SIZE='9'>ports ext:int</FONT></TD></TR>" +
+				"<TR><TD BGCOLOR='orange'><FONT POINT-SIZE='9'>volumes host:container</FONT></TD></TR>" +
+				"<TR><TD BGCOLOR='pink'><FONT POINT-SIZE='9'>environment</FONT></TD></TR>" +
+				"</TABLE>>",
+		})
 
 	/** NETWORK NODES **/
 	for name, _ := range data.Networks {
 		graph.AddNode(project, nodify(name), map[string]string{
-			"label": fmt.Sprintf("\"Network: %s\"", name),
-			"style": "filled",
-			"shape": "box",
+			"label":     fmt.Sprintf("\"Network: %s\"", name),
+			"style":     "filled",
+			"shape":     "box",
 			"fillcolor": "palegreen",
-			})
+		})
 	}
 
 	/** SERVICE NODES **/
 	for name, service := range data.Services {
 		var attrs = map[string]string{"shape": "plaintext", "label": "<<TABLE BORDER='0'>"}
 		attrs["label"] += fmt.Sprintf("<TR><TD BGCOLOR='lightblue'><B>%s</B></TD></TR>", name)
-		
+
 		if service.Ports != nil {
 			for _, port := range service.Ports {
 				attrs["label"] += fmt.Sprintf("<TR><TD BGCOLOR='lightgrey'><FONT POINT-SIZE='9'>%s</FONT></TD></TR>", port)
@@ -109,14 +110,14 @@ func main() {
 		}
 		if service.Volumes != nil {
 			for _, vol := range service.Volumes {
-				attrs["label"] += fmt.Sprintf("<TR><TD BGCOLOR='orange'><FONT POINT-SIZE='9'>%s</FONT></TD></TR>",vol)
+				attrs["label"] += fmt.Sprintf("<TR><TD BGCOLOR='orange'><FONT POINT-SIZE='9'>%s</FONT></TD></TR>", vol)
 			}
 		}
-/*		if service.Environment != nil {
-			for k, v := range service.Environment {
-				attrs["label"] += fmt.Sprintf("<TR><TD BGCOLOR='pink'><FONT POINT-SIZE='9'>%s: %s</FONT></TD></TR>",k,v)
-			}
-		}*/
+		/*		if service.Environment != nil {
+				for k, v := range service.Environment {
+					attrs["label"] += fmt.Sprintf("<TR><TD BGCOLOR='pink'><FONT POINT-SIZE='9'>%s: %s</FONT></TD></TR>",k,v)
+				}
+			}*/
 		attrs["label"] += "</TABLE>>"
 		graph.AddNode(project, nodify(name), attrs)
 	}
@@ -128,7 +129,7 @@ func main() {
 				if strings.Contains(linkTo, ":") {
 					linkTo = strings.Split(linkTo, ":")[0]
 				}
-				graph.AddEdge(nodify(name), nodify(linkTo), true, 
+				graph.AddEdge(nodify(name), nodify(linkTo), true,
 					map[string]string{"dir": "none"})
 			}
 		}
@@ -149,4 +150,3 @@ func main() {
 	}
 	fmt.Print(graph)
 }
-
