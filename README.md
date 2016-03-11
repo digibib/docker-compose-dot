@@ -28,7 +28,7 @@ docker pull digibib/docker-compose-dot:$TAG
 converting a docker-compose.yml in the current dir:
 
 ```
-docker run --rm -v $(pwd):/tmp -t digibib/docker-compose-dot:latest ./app /tmp/docker-compose.yml > docker-compose.dot
+docker run --rm -v $(pwd):/tmp digibib/docker-compose-dot:$(TAG) ./app /tmp/docker-compose.yml 2> /dev/null 1> docker-compose.dot
 ```
 
 You will need the Graphviz package to convert dot to image formats.
