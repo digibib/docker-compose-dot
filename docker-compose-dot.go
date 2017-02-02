@@ -61,8 +61,6 @@ func main() {
 		log.Fatal(err)
 	}
 
-	// Load docker-compose.yml
-
 	// Parse it as YML
 	data := &config{}
 	err = yaml.Unmarshal(bytes, &data)
@@ -80,7 +78,7 @@ func main() {
 	graph.AddNode("cluster_legend", "legend_service",
 		map[string]string{"shape": "plaintext",
 			"label": "<<TABLE BORDER='0'>" +
-				"<TR><TD BGCOLOR='lightblue'><B>container1</B></TD></TR>" +
+				"<TR><TD BGCOLOR='lightblue'><B>container_name</B></TD></TR>" +
 				"<TR><TD BGCOLOR='lightgrey'><FONT POINT-SIZE='9'>ports ext:int</FONT></TD></TR>" +
 				"<TR><TD BGCOLOR='orange'><FONT POINT-SIZE='9'>volumes host:container</FONT></TD></TR>" +
 				"<TR><TD BGCOLOR='pink'><FONT POINT-SIZE='9'>environment</FONT></TD></TR>" +
