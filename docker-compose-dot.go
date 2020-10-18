@@ -29,15 +29,35 @@ type volume struct {
 	DriverOpts       map[string]string "driver_opts"
 }
 
+type MapOrArrayWrapper []string
+
 type service struct {
-	ContainerName                            string "container_name"
-	Image                                    string
+	ContainerName                     string "container_name"
+	Image                             string
 	Networks, Ports, Volumes, Command, Links []string
-	VolumesFrom                              []string "volumes_from"
-	DependsOn                                []string "depends_on"
-	CapAdd                                   []string "cap_add"
-	Build                                    struct{ Context, Dockerfile string }
-	Environment                              map[string]string
+	VolumesFrom                       []string "volumes_from"
+	DependsOn                         []string "depends_on"
+	CapAdd                            []string "cap_add"
+	Build                             struct{ Context, Dockerfile string }
+	Environment                       MapOrArrayWrapper
+}
+
+func (w *MapOrArrayWrapper) UnmarshalYAML(unmarshal func(interface{}) error) error {
+	var envsArray []string
+	var envsMap map[string]string
+	if err := unmarshal(&envsMap); err == nil {
+		for key, val := range envsMap {
+			envsArray = append(envsArray, key + "=" + val)
+		}
+	}
+
+	if len(envsArray) == 0 {
+		if err := unmarshal(&envsArray); err != nil {
+			return err
+		}
+	}
+	*w = envsArray
+	return nil
 }
 
 func nodify(s string) string {
@@ -110,11 +130,11 @@ func main() {
 				attrs["label"] += fmt.Sprintf("<TR><TD BGCOLOR='orange'><FONT POINT-SIZE='9'>%s</FONT></TD></TR>", vol)
 			}
 		}
-		/*		if service.Environment != nil {
-				for k, v := range service.Environment {
-					attrs["label"] += fmt.Sprintf("<TR><TD BGCOLOR='pink'><FONT POINT-SIZE='9'>%s: %s</FONT></TD></TR>",k,v)
-				}
-			}*/
+		if service.Environment != nil {
+			for _, v := range service.Environment {
+				attrs["label"] += fmt.Sprintf("<TR><TD BGCOLOR='pink'><FONT POINT-SIZE='9'>%s</FONT></TD></TR>", v)
+			}
+		}
 		attrs["label"] += "</TABLE>>"
 		graph.AddNode(project, nodify(name), attrs)
 	}
