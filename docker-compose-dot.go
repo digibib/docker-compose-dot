@@ -34,7 +34,7 @@ type MapOrArrayWrapper []string
 type service struct {
 	ContainerName                     string "container_name"
 	Image                             string
-	Networks, Ports, Volumes, Command []string
+	Networks, Ports, Volumes, Command, Links []string
 	VolumesFrom                       []string "volumes_from"
 	DependsOn                         []string "depends_on"
 	CapAdd                            []string "cap_add"
@@ -162,6 +162,16 @@ func main() {
 			for _, linkTo := range service.DependsOn {
 				graph.AddEdge(nodify(name), nodify(linkTo), true,
 					map[string]string{"style": "dashed", "label": "depends_on"})
+			}
+		}
+		// links
+		if service.Links != nil {
+			for _, linkTo := range service.Links {
+				if strings.Contains(linkTo, ":") {
+					linkTo = strings.Split(linkTo, ":")[0]
+				}
+				graph.AddEdge(nodify(name), nodify(linkTo), true,
+					map[string]string{"style": "dashed", "label": "links"})
 			}
 		}
 	}
